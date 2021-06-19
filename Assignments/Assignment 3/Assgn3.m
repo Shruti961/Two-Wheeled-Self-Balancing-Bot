@@ -34,3 +34,23 @@ sys2_tf=tf(sys2)
 [b2,a2]=ss2tf(A,B,C2,D)
 sys1_zpg=zpk(sys1) %converts to zero-pole-gain model
 sys2_zpg=zpk(sys2)
+
+ob1=obsv(sys1)    %controllability of system
+ob2=obsv(sys2)
+
+co1=ctrb(sys1)    %observability of system
+co2=ctrb(sys2)
+
+%a state feedback controller using pole placement
+p =[-1 -0.5 -3 -2]
+K = place(A,B,p)
+
+Q=diag([2000 5 4 0.00003])
+R=50000
+N=[0;0;0;0]
+K=lqr(sys1,Q,R,N)
+A1=A-B*K
+sys_lqr=ss(A1,B,C1,D)
+P=pole(sys_lqr)
+rlocus(sys_lqr)
+S=isstable(sys_lqr)
